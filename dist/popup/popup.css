@@ -1,0 +1,97 @@
+:root {
+  color-scheme: light dark;
+  font-family: "Sora", "Poppins", "Manrope", "Segoe UI", sans-serif;
+  --bg: #0f1012;
+  --panel: #1a1c20;
+  --text: #f4f5f7;
+  --muted: #9ba2ab;
+  --accent: #ff6b6b;
+  --accent-2: #f7b267;
+  --border: #2b2f36;
+}
+
+@media (prefers-color-scheme: light) {
+  :root {
+    --bg: #ffffff;
+    --panel: #f7f7f9;
+    --text: #1b1f24;
+    --muted: #5b6169;
+    --accent: #d7263d;
+    --accent-2: #f46036;
+    --border: #e1e4ea;
+  }
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+}
+
+.popup {
+  width: 320px;
+  padding: 16px;
+  display: grid;
+  gap: 16px;
+}
+
+header h1 {
+  margin: 0 0 4px;
+  font-size: 18px;
+}
+
+header p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.status {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  padding: 12px;
+  border-radius: 12px;
+  display: grid;
+  gap: 6px;
+  font-size: 13px;
+}
+
+.actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+button {
+  border: none;
+  padding: 10px 12px;
+  border-radius: 10px;
+  background: linear-gradient(135deg, var(--accent), var(--accent-2));
+  color: white;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+button#openModal {
+  background: transparent;
+  color: var(--text);
+  border: 1px solid var(--border);
+}
+
+.toggles {
+  display: grid;
+  gap: 6px;
+  font-size: 13px;
+}
+
+label {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+footer a {
+  color: var(--muted);
+  text-decoration: none;
+  font-size: 12px;
+}
