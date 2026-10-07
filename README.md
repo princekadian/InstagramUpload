@@ -1,65 +1,36 @@
-# Instagram Upload
-Upload Instagram stories from desktop browsers using your existing session. Works on Chrome/Brave/Chromium with Manifest V3.
+# Story Uploader for Instagram
 
-## Download and Install
+A Brave/Chrome extension that adds an **Upload story** button to instagram.com, so you can post photo and video stories from your desktop. A preview shows exactly what you'll post before you share.
 
-1. Download the repository as a ZIP from GitHub and extract it.
-2. Open your browser extensions page:
-   - Chrome: `chrome://extensions`
-   - Brave: `brave://extensions`
-   - Edge: `edge://extensions`
-3. Enable **Developer mode**.
-4. Click **Load unpacked**.
-5. Select the extracted folder (this folder contains `manifest.json`).
+## Install (Brave)
 
-## How to Use
+1. Open `brave://extensions`
+2. Turn on **Developer mode** (top right)
+3. Click **Load unpacked** and select this folder (`E:\INSTAUPLOAD`)
+4. Open or refresh https://www.instagram.com while logged in
 
-1. Log in to Instagram.
-2. Open `https://www.instagram.com/`.
-3. Click the **Upload Story** floating button.
-4. Drop a photo/video or use the file picker.
-5. Watch progress and confirm success.
+**Upload story** appears in Instagram's left sidebar under **Create**. If the sidebar isn't there (narrow window, or Instagram in a language other than English), a floating **Upload story** button appears in the bottom-right corner instead.
 
-## Features
+## Using it
 
-- Upload photo or video stories from desktop.
-- Drag & drop or file picker.
-- Upload queue and progress tracking.
-- Mobile-mode toggle to unlock hidden web upload flows.
-- Debug logging and developer diagnostics.
-- Privacy-first: no passwords, no external servers, no tracking.
+- Drop a file onto the window, click to browse, or paste an image with Ctrl+V.
+- **Photos** are rendered to 1080 × 1920. Pick a framing:
+  - **Fill**: crops the photo to fill the screen. Drag the preview to change the crop, and double-click to re-center it.
+  - **Blur**: shows the whole photo over a blurred copy of itself.
+  - **Black**: shows the whole photo on a black background.
+- **Videos** that are already 9:16 upload unchanged. Square or landscape videos are re-rendered onto a 9:16 frame (Fill, Blur or Black, same as photos) so they keep their shape on phones. This plays the video once in real time, so keep the tab in front. Keep videos to 60 seconds or less. Click the preview's speaker icon to hear the audio.
+- The checks panel flags anything Instagram is likely to reject before you upload.
 
-## Technical Details
+## Files
 
-Feature | Implementation
---- | ---
-Manifest Version | V3
-Upload Method | Instagram Web `rupload` + configure_to_story
-Content Scripts | Injected UI + page bridge for headers/tokens
-Queue | In-memory queue with progress events
-Validation | Type/size/duration checks before upload
-SPA Handling | MutationObserver + URL watching
+| File | Purpose |
+| --- | --- |
+| `src/ui.js` | Button, modal, story previewer |
+| `src/styles.js` | All styling (lives in a Shadow DOM so Instagram's CSS can't leak in) |
+| `src/media.js` | Image framing/rendering, video probing, cover-frame capture |
+| `src/page.js` | Runs inside Instagram's page context and does the actual upload + publish requests |
+| `src/instagram.js` | Bridge between the UI and `page.js`, plus friendly error messages |
 
-## Privacy & Permissions
+## Caveats
 
-Permission | Why
---- | ---
-activeTab | Inject the uploader UI on the current Instagram tab
-scripting | Inject page bridge logic for headers/tokens
-storage | Save user preferences (debug, mobile mode)
-tabs | Detect Instagram tab changes
-Host access | `https://www.instagram.com/*` and `https://i.instagram.com/*`
-
-No data is collected, stored externally, or transmitted to third parties.
-
-## Disclaimer
-
-This extension is for personal use only. Respect creators' rights and Instagram's terms. This project is not affiliated with, authorized by, or endorsed by Instagram or Meta Platforms, Inc.
-
-## License
-
-MIT License. See `LICENSE`.
-
-## Copyright
-
-Copyright (c) 2026 Prince Kadian. All rights reserved.
+This extension uses Instagram's private web endpoints, the same ones its mobile website uses. Instagram can change them without notice. If uploads start failing, the error message in the panel shows what Instagram returned. Photo stories are the most reliable. Video stories depend on Instagram's processing and may need a retry.
