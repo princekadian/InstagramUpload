@@ -6,7 +6,7 @@ A Brave/Chrome extension that adds an **Upload story** button to instagram.com, 
 
 1. Open `brave://extensions`
 2. Turn on **Developer mode** (top right)
-3. Click **Load unpacked** and select this folder (`E:\INSTAUPLOAD`)
+3. Click **Load unpacked** and select the folder you cloned or unzipped (the one containing `manifest.json`)
 4. Open or refresh https://www.instagram.com while logged in
 
 **Upload story** appears in Instagram's left sidebar under **Create**. If the sidebar isn't there (narrow window, or Instagram in a language other than English), a floating **Upload story** button appears in the bottom-right corner instead.
