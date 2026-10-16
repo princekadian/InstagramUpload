@@ -110,7 +110,8 @@
   }
 
   async function configureStory(session, uploadId, videoMeta, cover, report) {
-    const maxAttempts = 6;
+    // ~90s total: 6 tries (~20s) gave up before Instagram finished transcoding longer videos.
+    const maxAttempts = 20;
     for (let attempt = 0; attempt < maxAttempts; attempt++) {
       const res = await fetch('https://www.instagram.com/api/v1/media/configure_to_story/', {
         method: 'POST',
@@ -144,7 +145,7 @@
       if (message && !message.toLowerCase().includes('transcode')) throw new Error(message);
 
       report(0.92, 'Instagram is processing the video');
-      await delay(1500 + attempt * 800);
+      await delay(Math.min(1500 + attempt * 800, 5000));
     }
     throw new Error("Instagram didn't finish processing the video in time. Try again in a moment.");
   }

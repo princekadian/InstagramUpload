@@ -263,8 +263,8 @@
   }
 
   function clearMedia() {
-    cancelAnimationFrame(state.raf);
     const v = ref.video;
+    v.cancelVideoFrameCallback(state.raf);
     v.pause();
     v.removeAttribute('src');
     v.load();
@@ -376,11 +376,13 @@
     ref.phone.classList.toggle('can-drag', draggable && !state.busy);
   }
 
+  // Redraw only when the video presents a new frame: nothing while paused,
+  // hidden or composing, instead of a 1080×1920 redraw on every display refresh.
   function tickVideo() {
     const v = ref.video;
     if (v.duration) ref.barFill.style.width = `${(v.currentTime / v.duration) * 100}%`;
     if (v.readyState >= 2) renderFrame();
-    state.raf = requestAnimationFrame(tickVideo);
+    state.raf = v.requestVideoFrameCallback(tickVideo);
   }
 
   function syncVideoButtons() {
@@ -419,7 +421,7 @@
       out.push({ level: 'ok', title: `Keeps its ${aspectLabel(meta.width, meta.height)} shape`, sub: "Placed on a 9:16 frame, so it won't be stretched or cropped on phones." });
     }
     if (!vertical) {
-      out.push({ level: 'info', title: 'Prepared before upload', sub: `Rendering takes about ${Math.ceil(meta.duration)}s. Keep this tab in front while it runs.` });
+      out.push({ level: 'info', title: 'Prepared before upload', sub: `Rendering takes about ${Math.ceil(meta.duration)}s. It pauses if you switch tabs and resumes when you come back.` });
     }
     if (meta.duration > 60.05) {
       out.push({ level: 'warn', title: `Longer than 60 seconds (${formatDuration(meta.duration)})`, sub: 'Instagram may cut it short or reject it. Trimming to 60s is safest.' });

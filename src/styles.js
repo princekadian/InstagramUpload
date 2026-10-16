@@ -76,8 +76,7 @@ svg { display: block; }
   display: grid;
   place-items: center;
   padding: 16px;
-  background: rgba(6, 6, 7, 0.74);
-  backdrop-filter: blur(8px);
+  background: rgba(6, 6, 7, 0.88);
   animation: su-fade 0.2s ease-out;
 }
 .sheet {
@@ -290,8 +289,7 @@ svg { display: block; }
   transform: translate(-50%, -50%);
   padding: 7px 12px;
   border-radius: 999px;
-  background: rgba(0, 0, 0, 0.62);
-  backdrop-filter: blur(6px);
+  background: rgba(0, 0, 0, 0.72);
   color: #fff;
   font: 500 12px/1 var(--sans);
   white-space: nowrap;

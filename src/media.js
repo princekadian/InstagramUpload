@@ -168,6 +168,7 @@
     canvas.width = STORY_W;
     canvas.height = STORY_H;
 
+    let onVisibility = null;
     try {
       const meta = await probeVideo(video, url);
 
@@ -181,14 +182,14 @@
       // Route the soundtrack into the recording only, never to the speakers.
       const sink = audio.createMediaStreamDestination();
       audio.createMediaElementSource(video).connect(sink);
-      const stream = new MediaStream([
-        ...canvas.captureStream(30).getVideoTracks(),
-        ...sink.stream.getAudioTracks(),
-      ]);
+      // Frame rate 0 = manual: exactly one recorded frame per source frame,
+      // instead of a 30fps timer that duplicates or drops frames (stutter).
+      const [videoTrack] = canvas.captureStream(0).getVideoTracks();
+      const stream = new MediaStream([videoTrack, ...sink.stream.getAudioTracks()]);
 
       const recorder = new MediaRecorder(stream, {
         mimeType,
-        videoBitsPerSecond: 8_000_000,
+        videoBitsPerSecond: 12_000_000,
         audioBitsPerSecond: 128_000,
       });
       const chunks = [];
@@ -201,15 +202,31 @@
       let frameHandle = 0;
       const draw = () => {
         renderStory(canvas, video, fit, focus, { fast: true });
+        videoTrack.requestFrame();
         onProgress(Math.min(1, video.currentTime / meta.duration));
         frameHandle = video.requestVideoFrameCallback(draw);
       };
       frameHandle = video.requestVideoFrameCallback(draw);
 
+      let fail;
       const ended = new Promise((resolve, reject) => {
+        fail = reject;
         video.onended = resolve;
         video.onerror = () => reject(new Error('The video stopped playing while it was being prepared.'));
       });
+
+      // Background tabs stop delivering frames while audio keeps going, which
+      // froze the recording. Pause both until the tab is visible again.
+      onVisibility = () => {
+        if (document.hidden) {
+          video.pause();
+          if (recorder.state === 'recording') recorder.pause();
+        } else if (recorder.state === 'paused') {
+          recorder.resume();
+          video.play().catch(fail);
+        }
+      };
+      document.addEventListener('visibilitychange', onVisibility);
 
       recorder.start(1000);
       await video.play();
@@ -226,6 +243,7 @@
         meta: { width: STORY_W, height: STORY_H, durationMs: Math.round(meta.duration * 1000) },
       };
     } finally {
+      if (onVisibility) document.removeEventListener('visibilitychange', onVisibility);
       video.pause();
       video.removeAttribute('src');
       video.load();
